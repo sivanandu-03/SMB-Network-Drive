@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  samba:
+    image: dperson/samba
+
+    ports:
+      - "139:139"
+      - "445:445"
+    command: [ "-g", "ntlm auth = yes", "-p", "-u", "user;pass", "-s", "share;/mount;yes;no;no;user" ]
+    healthcheck:
+      test: [ "CMD-SHELL", "smbstatus" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
