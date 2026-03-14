@@ -5,9 +5,9 @@ services:
     image: dperson/samba
 
     ports:
-      - "139:139"
-      - "445:445"
-    command: [ "-g", "ntlm auth = yes", "-p", "-u", "user;pass", "-s", "share;/mount;yes;no;no;user" ]
+      - "1391:139"
+      - "4451:445"
+    command: [ "-g", "ntlm auth = yes", "-r", "-p", "-u", "user;pass", "-s", "share;/mount;yes;no;no;user" ]
     healthcheck:
       test: [ "CMD-SHELL", "smbstatus" ]
       interval: 10s
