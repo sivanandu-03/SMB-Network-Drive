@@ -9,7 +9,7 @@ export class SMBClient {
       username: process.env.SMB_USERNAME || '',
       password: process.env.SMB_PASSWORD || '',
       port: parseInt(process.env.SMB_PORT || '445', 10),
-      autoCloseTimeout: 0,
+      autoCloseTimeout: 200,
     });
   }
 
@@ -31,43 +31,19 @@ export class SMBClient {
       }));
     } catch (err: any) {
       throw err;
-    } finally {
-      try { client.disconnect(); } catch (e) { }
     }
   }
 
   async createReadStream(reqPath: string) {
     const client = this.getClient();
     const cleanPath = this.sanitizePath(reqPath);
-    const stream = await client.createReadStream(cleanPath) as any;
-    let closed = false;
-    const cleanup = () => {
-      if (!closed) {
-        closed = true;
-        try { client.disconnect(); } catch (e) { }
-      }
-    };
-    stream.on('end', cleanup);
-    stream.on('error', cleanup);
-    stream.on('close', cleanup);
-    return stream;
+    return await client.createReadStream(cleanPath) as any;
   }
 
   async createWriteStream(reqPath: string) {
     const client = this.getClient();
     const cleanPath = this.sanitizePath(reqPath);
-    const stream = await client.createWriteStream(cleanPath) as any;
-    let closed = false;
-    const cleanup = () => {
-      if (!closed) {
-        closed = true;
-        try { client.disconnect(); } catch (e) { }
-      }
-    };
-    stream.on('finish', cleanup);
-    stream.on('error', cleanup);
-    stream.on('close', cleanup);
-    return stream;
+    return await client.createWriteStream(cleanPath) as any;
   }
 
   async deleteFile(reqPath: string) {
@@ -80,19 +56,13 @@ export class SMBClient {
         return await client.rmdir(cleanPath);
       }
       throw e;
-    } finally {
-      try { client.disconnect(); } catch (e) { }
     }
   }
 
   async stat(reqPath: string) {
     const client = this.getClient();
     const cleanPath = this.sanitizePath(reqPath);
-    try {
-      return await client.stat(cleanPath);
-    } finally {
-      try { client.disconnect(); } catch (e) { }
-    }
+    return await client.stat(cleanPath);
   }
 }
 
